@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SH-AI | StaffHealth Workforce Intelligence</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f4f6fb;
+      --bg-card: #ffffff;
+      --border-subtle: #e0e4f0;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --accent: #1f4fbf;
+      --accent-soft: #e7edf9;
+      --accent-dark: #122650;
+      --danger: #b3261e;
+      --success: #15803d;
+      --warning: #b45309;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top left, #e8efff 0, #f4f6fb 50%, #f9fafb 100%);
+      color: var(--text-main);
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(90deg, var(--accent-dark), #13366e);
+      color: #ffffff;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.3);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: radial-gradient(circle at 30% 20%, #f9fafb 0, #c7d2fe 35%, #1f4fbf 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .brand-text-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .brand-text-sub {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .header-meta {
+      font-size: 12px;
+      text-align: right;
+      opacity: 0.85;
+    }
+
+    .header-meta strong {
+      font-weight: 600;
+    }
+
+    main {
+      flex: 1;
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 1120px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .search-shell {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 16px;
+      padding: 16px 18px 18px;
+      border: 1px solid rgba(209, 213, 219, 0.7);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      backdrop-filter: blur(8px);
+    }
+
+    .search-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .search-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-input-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: #f9fafb;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .search-input-wrap:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(31, 79, 191, 0.12);
+      background: #ffffff;
+    }
+
+    .search-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--accent-dark);
+    }
+
+    .search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 14px;
+      color: var(--text-main);
+    }
+
+    .search-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .search-button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--accent);
+      color: #ffffff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.3);
+    }
+
+    .search-button span.icon {
+      font-size: 14px;
+    }
+
+    .search-button:hover {
+      background: #2346a1;
+    }
+
+    .prompt-chips {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px dashed #d1d5db;
+      background: #f9fafb;
+      color: #4b5563;
+      cursor: default;
+      white-space: nowrap;
+    }
+
+    .chip.primary {
+      border-style: solid;
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      font-weight: 500;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.6fr);
+      gap: 16px;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 900px) {
+      .layout-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      padding: 14px 16px 16px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-title-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .card-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .answer-body {
+      font-size: 13px;
+      color: var(--text-main);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    .answer-highlights {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 11px;
+    }
+
+    .answer-pill {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #f3f4ff;
+      color: #1d4ed8;
+      border: 1px solid #c7d2fe;
+    }
+
+    .candidate-list {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .candidate-card {
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      padding: 10px 10px 10px 12px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      background: #ffffff;
+    }
+
+    .candidate-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent) 0, #60a5fa 60%, #eff6ff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .candidate-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .candidate-row-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .candidate-name-role {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .candidate-name-role span {
+      font-weight: 500;
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-left: 4px;
+    }
+
+    .candidate-tag-elig {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #ecfdf3;
+      color: var(--success);
+      border: 1px solid #bbf7d0;
+      white-space: nowrap;
+    }
+
+    .candidate-tag-elig.pending {
+      background: #fef9c3;
+      border-color: #facc15;
+      color: var(--warning);
+    }
+
+    .candidate-stats {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .candidate-stats strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .candidate-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .meta-pill {
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #f3f4f6;
+    }
+
+    .meta-pill.fit {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .insight-card {
+      margin-top: 6px;
+      border-radius: 10px;
+      padding: 10px 10px;
+      background: linear-gradient(135deg, #e0edff, #eff6ff);
+      border: 1px solid #c7d2fe;
+      font-size: 12px;
+      color: #111827;
+      line-height: 1.5;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .insight-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: #1d4ed8;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .insight-main strong {
+      font-weight: 600;
+    }
+
+    .insight-sub {
+      font-size: 11px;
+      color: #4b5563;
+      margin-top: 2px;
+    }
+
+    .usage-card {
+      margin-top: 8px;
+      border-radius: 10px;
+      padding: 10px 11px;
+      background: #fef3c7;
+      border: 1px solid #fbbf24;
+      font-size: 12px;
+      color: #78350f;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .usage-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: #f59e0b;
+      color: #ffffff;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .usage-main strong {
+      font-weight: 600;
+    }
+
+    .usage-sub {
+      font-size: 11px;
+      margin-top: 2px;
+      color: #92400e;
+    }
+
+    .sidebar-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .summary-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 600px) {
+      .summary-metrics {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .metric-box {
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      font-size: 11px;
+    }
+
+    .metric-label {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+      font-size: 10px;
+    }
+
+    .metric-value {
+      font-size: 15px;
+      font-weight: 700;
+      margin-top: 2px;
+      color: var(--accent-dark);
+    }
+
+    .metric-sub {
+      margin-top: 1px;
+      color: #6b7280;
+    }
+
+    .tier-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #e0f2fe;
+      color: #075985;
+      border: 1px solid #bae6fd;
+      margin-top: 6px;
+    }
+
+    .tier-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #0ea5e9;
+    }
+
+    .sidebar-note {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    .actions-bar {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn-ghost {
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      padding: 6px 12px;
+      background: #ffffff;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      color: #374151;
+    }
+
+    .btn-ghost:hover {
+      background: #f3f4f6;
+    }
+
+    footer {
+      padding: 10px 24px 16px;
+      font-size: 11px;
+      color: #9ca3af;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <div class="brand">
+        <div class="brand-icon">SH</div>
+        <div>
+          <div class="brand-text-title">SH-AI</div>
+          <div class="brand-text-sub">StaffHealth · Verified Workforce Intelligence</div>
+        </div>
+      </div>
+      <div class="header-meta">
+        <div><strong>Hudson Oaks Memory Care</strong></div>
+        <div style="font-size:11px; opacity:0.85;">Stability Mode: <strong>Active</strong> · Powered by StaffHealth usage</div>
+      </div>
+    </header>
+
+    <main>
+      <div class="page">
+
+        <!-- Search -->
+        <section class="search-shell">
+          <div class="search-label">Ask SH-AI about your caregivers, staffing, or hiring</div>
+          <div class="search-row">
+            <div class="search-input-wrap">
+              <div class="search-icon">🔍</div>
+              <input
+                class="search-input"
+                type="text"
+                placeholder='e.g. "Show me CNAs within 15 miles who stabilize weekend memory-care shifts"' />
+            </div>
+            <button class="search-button">
+              <span class="icon">▶</span>
+              Ask SH-AI
+            </button>
+          </div>
+          <div class="prompt-chips">
+            <div class="chip primary">Reliable CNAs within 15 miles for memory care</div>
+            <div class="chip">Who should I trial this weekend?</div>
+            <div class="chip">Who is eligible for full-time hire?</div>
+            <div class="chip">Caregivers who reduce PBJ/OT risk</div>
+            <div class="chip">Best overnight aides for buildings like mine</div>
+          </div>
+        </section>
+
+        <!-- Main Layout -->
+        <section class="layout-grid">
+          <!-- Left: AI answer + results -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                🧠 SH-AI Answer
+                <span class="card-title-badge">Live Intelligence</span>
+              </div>
+              <div class="card-sub">Prompt: “Reliable CNAs within 15 miles for memory care this month.”</div>
+            </div>
+            <div class="answer-body">
+              I found <strong>12 caregivers</strong> that match your request:
+              <ul style="margin:4px 0 4px 18px; padding:0; font-size:13px;">
+                <li>8 have worked memory care in the last 90 days</li>
+                <li>5 have fewer than 2 call-offs in the last 60 days</li>
+                <li>3 are currently eligible for full-time hire with no fee</li>
+                <li>4 have strong matches to communities similar to yours</li>
+              </ul>
+              Tap any profile below to see reliability, experience, and hire-eligibility.
+            </div>
+            <div class="answer-highlights">
+              <div class="answer-pill">Filtered by reliability & experience</div>
+              <div class="answer-pill">Availability confirmed via StaffHealth</div>
+              <div class="answer-pill">Similarity to your community factored in</div>
+            </div>
+
+            <!-- Candidate list -->
+            <div class="candidate-list">
+              <div class="candidate-card">
+                <div class="candidate-avatar">A</div>
+                <div class="candidate-main">
+                  <div class="candidate-row-top">
+                    <div class="candidate-name-role">
+                      Caregiver A <span>CNA · Memory Care Focus</span>
+                    </div>
+                    <div class="candidate-tag-elig pending">
+                      Needs 28 more hours for FT-hire
+                    </div>
+                  </div>
+                  <div class="candidate-stats">
+                    <span><strong>94/100</strong> reliability · last 60 days</span>
+                    <span>228 hours in memory care</span>
+                    <span>11 shifts completed · 0 no-shows</span>
+                  </div>
+                  <div class="candidate-meta">
+                    <span class="meta-pill fit">Fit: ★★★★☆ · similar communities</span>
+                    <span class="meta-pill">Weekend & overnight capable</span>
+                    <span class="meta-pill">Available via StaffHealth</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="candidate-card">
+                <div class="candidate-avatar">B</div>
+                <div class="candidate-main">
+                  <div class="candidate-row-top">
+                    <div class="candidate-name-role">
+                      Caregiver B <span>CNA · Night-Shift Specialist</span>
+                    </div>
+                    <div class="candidate-tag-elig">
+                      FT-hire eligible · 182 hours met
+                    </div>
+                  </div>
+                  <div class="candidate-stats">
+                    <span><strong>88/100</strong> reliability</span>
+                    <span>7 shifts · 0 call-offs · last 60 days</span>
+                    <span>High-acuity AL & MC experience</span>
+                  </div>
+                  <div class="candidate-meta">
+                    <span class="meta-pill fit">Fit: ★★★★★</span>
+                    <span class="meta-pill">Strong family request-back history</span>
+                    <span class="meta-pill">Available via StaffHealth</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="candidate-card">
+                <div class="candidate-avatar">C</div>
+                <div class="candidate-main">
+                  <div class="candidate-row-top">
+                    <div class="candidate-name-role">
+                      Caregiver C <span>CNA · Weekend Stability</span>
+                    </div>
+                    <div class="candidate-tag-elig pending">
+                      Not FT-eligible yet
+                    </div>
+                  </div>
+                  <div class="candidate-stats">
+                    <span><strong>79/100</strong> reliability</span>
+                    <span>5 shifts · 1 late · last 30 days</span>
+                    <span>Dementia & AL experience</span>
+                  </div>
+                  <div class="candidate-meta">
+                    <span class="meta-pill fit">Fit: ★★★☆☆</span>
+                    <span class="meta-pill">Weekend coverage priority</span>
+                    <span class="meta-pill">Available via StaffHealth</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Insight -->
+            <div class="insight-card">
+              <div class="insight-icon">ⓘ</div>
+              <div class="insight-main">
+                <strong>Stability Insight</strong>
+                <div class="insight-sub">
+                  Selecting a caregiver with a Fit Score of ★★★★☆ or higher for your weekend memory-care
+                  shifts is projected to reduce your <strong>Weekend Volatility Index by 18 points</strong>
+                  and save approximately <strong>$28,600/year</strong>, based on your current SHSI profile.
+                </div>
+              </div>
+            </div>
+
+            <!-- Usage banner -->
+            <div class="usage-card">
+              <div class="usage-icon">⚡</div>
+              <div class="usage-main">
+                <div><strong>Powered by StaffHealth usage</strong></div>
+                <div class="usage-sub">
+                  This live intelligence stays fully active while you maintain at least
+                  <strong>40 StaffHealth hours/month</strong>. If usage drops, SH-AI will continue to work,
+                  but real-time availability and updated scores will gradually freeze.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Summary & actions -->
+          <aside class="sidebar-section">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">SHSI / SHWSI Snapshot</div>
+              </div>
+              <div class="card-sub">
+                Economic impact of instability, based on your current pattern of OT, PRN usage, vacancies, and turnover.
+              </div>
+              <div class="summary-metrics">
+                <div class="metric-box">
+                  <div class="metric-label">Volatility Cost</div>
+                  <div class="metric-value">$184,000</div>
+                  <div class="metric-sub">OT + PRN + leadership drag · yearly estimate</div>
+                </div>
+                <div class="metric-box">
+                  <div class="metric-label">Workforce Drag</div>
+                  <div class="metric-value">$236,000</div>
+                  <div class="metric-sub">Turnover + vacancy drag · yearly estimate</div>
+                </div>
+                <div class="metric-box">
+                  <div class="metric-label">Stabilizable Upside</div>
+                  <div class="metric-value">$312,000</div>
+                  <div class="metric-sub">Conservative savings unlocked through SH-AI-guided staffing + hiring</div>
+                </div>
+                <div class="metric-box">
+                  <div class="metric-label">Suggested Tier</div>
+                  <div class="metric-sub">
+                    <div class="tier-pill">
+                      <span class="tier-dot"></span>
+                      Core Stability · AI-Enabled
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="sidebar-note">
+                SH-AI uses your SHSI and SHWSI profiles to prioritize caregivers who reduce volatility and drag,
+                not just “fill” shifts.
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Next Best Actions</div>
+              </div>
+              <div class="card-sub">
+                Turn SH-AI recommendations into real staffing decisions in a few clicks.
+              </div>
+              <div class="actions-bar">
+                <button class="btn-ghost">⭐ Save shortlist for scheduler</button>
+                <button class="btn-ghost">📅 Trial for weekend shifts</button>
+                <button class="btn-ghost">✅ Check full-time hire eligibility</button>
+                <button class="btn-ghost">📊 View stability impact report</button>
+              </div>
+              <div class="sidebar-note">
+                EDs, DONs, and schedulers can share these shortlists and impact reports across your
+                leadership team to align on staffing decisions quickly.
+              </div>
+            </div>
+          </aside>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      SH-AI is a concept prototype for StaffHealth workforce intelligence. Numbers shown are illustrative only.
+    </footer>
+  </div>
+</body>
+</html>
